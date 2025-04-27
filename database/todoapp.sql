@@ -34,10 +34,13 @@ CREATE TABLE `tasks` (
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   KEY `todolist_id` (`todolist_id`),
-  CONSTRAINT `tasks_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
   CONSTRAINT `tasks_ibfk_2` FOREIGN KEY (`todolist_id`) REFERENCES `todolists` (`id`) ON DELETE CASCADE
 );
 
 SELECT * FROM tasks;
 SELECT * FROM users;
 SELECT * FROM todolists;
+
+
+ALTER TABLE tasks DROP CONSTRAINT tasks_ibfk_1;
+ALTER TABLE tasks DROP COLUMN user_id;
