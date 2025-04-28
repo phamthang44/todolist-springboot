@@ -26,9 +26,9 @@ public class UserService {
         return userRepository.existsByUsername(username);
     }
 
-    public void changeStatusById(Integer id, User.UserStatus status) {
-        userRepository.changeStatusById(id, status);
-    }
+//    public void changeStatusById(Integer id, User.UserStatus status) {
+//        userRepository.changeStatusById(id, status);
+//    }
 
     public User findByEmail(String email) {
         return userRepository.findByEmail(email);

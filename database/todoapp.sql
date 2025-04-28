@@ -47,3 +47,4 @@ SHOW CREATE TABLE tasks;
 
 ALTER TABLE tasks DROP CONSTRAINT tasks_ibfk_1;
 ALTER TABLE tasks DROP COLUMN user_id;
+
