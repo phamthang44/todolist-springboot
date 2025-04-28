@@ -41,6 +41,9 @@ SELECT * FROM tasks;
 SELECT * FROM users;
 SELECT * FROM todolists;
 
+SHOW CREATE TABLE todolists;
+SHOW CREATE TABLE tasks;
+
 
 ALTER TABLE tasks DROP CONSTRAINT tasks_ibfk_1;
 ALTER TABLE tasks DROP COLUMN user_id;

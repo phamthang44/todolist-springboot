@@ -1,12 +1,13 @@
 package com.thang.todolist.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import java.time.LocalDateTime;
 
 @Entity
 @Data
-class Task {
+public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
@@ -15,8 +16,10 @@ class Task {
     @JoinColumn(name = "todolist_id")
     private Todolist todolist;
 
+    @NotBlank(message = "Title cannot be empty")
     private String title;
 
+    @NotBlank(message = "Description cannot be empty")
     private String description;
 
     @Enumerated(EnumType.STRING)

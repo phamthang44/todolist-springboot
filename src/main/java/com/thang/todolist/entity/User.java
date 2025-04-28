@@ -6,21 +6,29 @@ import jakarta.persistence.Id;
 import java.time.LocalDateTime;
 import java.util.List;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import static jakarta.persistence.GenerationType.AUTO;
 
 @Entity
 @Data
-class User {
+public class User {
     @Id
     @GeneratedValue(strategy = AUTO)
     private Integer id;
 
-    @Column(unique = true)
+    @NotBlank(message = "Username cannot be empty")
+    @NotNull
     private String username;
 
+    @NotBlank(message = "Email cannot be empty")
+    @NotNull
+    @Column(unique = true)
     private String email;
 
+    @NotNull
+    @NotBlank(message = "Password cannot be empty")
     private String password;
 
     private LocalDateTime createdAt;
@@ -28,6 +36,15 @@ class User {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Todolist> todolists;
+    private List<Todolist> todoLists;
 
+    @Enumerated(EnumType.STRING)
+    private UserStatus userStatus;
+
+    public enum UserStatus {
+        ACTIVE,
+        BANNED,
+        INACTIVE,
+        DELETED
+    }
 }
