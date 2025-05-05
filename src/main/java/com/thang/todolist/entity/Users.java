@@ -1,5 +1,9 @@
 package com.thang.todolist.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
@@ -9,20 +13,27 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+
+
 import static jakarta.persistence.GenerationType.AUTO;
 
 @Entity
 @Data
-public class User {
+public class Users {
     @Id
     @GeneratedValue(strategy = AUTO)
+    @JsonSerialize(using = ToStringSerializer.class)
     private Integer id;
 
     @NotBlank(message = "Username cannot be empty")
+    @JsonSerialize(using = ToStringSerializer.class)
     @NotNull
     private String username;
 
     @NotBlank(message = "Email cannot be empty")
+    @JsonSerialize(using = ToStringSerializer.class)
     @NotNull
     @Column(unique = true)
     private String email;
@@ -35,10 +46,12 @@ public class User {
 
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Todolist> todoLists;
+    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+    @JsonBackReference
+    private List<Todolists> todoLists;
 
     @Enumerated(EnumType.STRING)
+    @JsonIgnore
     private UserStatus userStatus;
 
     public enum UserStatus {
@@ -46,5 +59,12 @@ public class User {
         BANNED,
         INACTIVE,
         DELETED
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+    public Integer getId() {
+        return id;
     }
 }

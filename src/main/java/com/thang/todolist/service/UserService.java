@@ -2,7 +2,7 @@ package com.thang.todolist.service;
 
 import com.thang.todolist.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.thang.todolist.entity.User;
+import com.thang.todolist.entity.Users;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,26 +14,26 @@ public class UserService {
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
-    public User findByUsername(String username) {
+    public Users findByUsername(String username) {
         return userRepository.findByUsername(username);
     }
 
-    public User save(User user) {
-        return userRepository.save(user);
+    public Users save(Users users) {
+        return userRepository.save(users);
     }
 
     public boolean existsByUsername(String username) {
         return userRepository.existsByUsername(username);
     }
 
-//    public void changeStatusById(Integer id, User.UserStatus status) {
+//    public void changeStatusById(Integer id, Users.UserStatus status) {
 //        userRepository.changeStatusById(id, status);
 //    }
 
-    public User findByEmail(String email) {
+    public Users findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
-    public User findByUsernameOrEmail(String username, String email) {
+    public Users findByUsernameOrEmail(String username, String email) {
         return userRepository.findByUsernameOrEmail(username, email);
     }
     public boolean existsByEmail(String email) {
@@ -42,7 +42,7 @@ public class UserService {
     public boolean existsByUsernameOrEmail(String username, String email) {
         return userRepository.existsByUsername(username) || userRepository.existsByEmail(email);
     }
-    public User findById(Integer id) {
+    public Users findById(Integer id) {
         return userRepository.findById(id).orElse(null);
     }
 

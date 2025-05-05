@@ -1,6 +1,6 @@
 package com.thang.todolist.controller;
 
-import com.thang.todolist.entity.Task;
+import com.thang.todolist.entity.Tasks;
 import com.thang.todolist.service.TaskService;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,12 +16,22 @@ public class TaskController {
     }
 
     @GetMapping("/tasks/todolist/{id}")
-    public List<Task> getAllTasksByTodolistId(@PathVariable Integer id) {
+    public List<Tasks> getAllTasksByTodolistId(@PathVariable Integer id) {
         return taskService.getAllTasksByTodolistId(id);
     }
 
     @PostMapping
-    public Task createTask(@RequestBody Task task) {
-        return taskService.saveTask(task);
+    public Tasks createTask(@RequestBody Tasks tasks) {
+        return taskService.saveTask(tasks);
+    }
+
+    @PutMapping
+    public Tasks updateTask(@RequestBody Tasks tasks) {
+        return taskService.saveTask(tasks);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteTask(@PathVariable Integer id) {
+        taskService.deleteTask(id);
     }
 }

@@ -1,6 +1,6 @@
 package com.thang.todolist.service;
 
-import com.thang.todolist.entity.Todolist;
+import com.thang.todolist.entity.Todolists;
 import com.thang.todolist.exception.NotFoundException;
 import com.thang.todolist.repository.TodolistRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,21 +18,21 @@ public class TodolistService {
         this.todolistRepository = todolistRepository;
     }
 
-    public List<Todolist> getAllTodoLists() {
+    public List<Todolists> getAllTodoLists() {
         return todolistRepository.findAll();
     }
 
-    public Todolist getTodolistById(Integer id) {
+    public Todolists getTodolistById(Integer id) {
         return todolistRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Todo list with ID " + id + " not found"));
     }
 
-    public Todolist getTodoListByName(String name) {
+    public Todolists getTodoListByName(String name) {
         return todolistRepository.findByName(name);
     }
 
     //create also update
-    public Todolist saveTodoList(Todolist todolist) {
+    public Todolists saveTodoList(Todolists todolist) {
         return todolistRepository.save(todolist);
     }
 
@@ -40,17 +40,17 @@ public class TodolistService {
         todolistRepository.deleteById(id);
     }
 
-    public boolean existsByName(String name) {
-        return todolistRepository.existsByName(name);
-    }
-    public boolean existsByUserId(Integer userId) {
-        return todolistRepository.existsByUserId(userId);
-    }
-    public boolean existsByNameAndUserId(String name, Integer userId) {
-        return todolistRepository.existsByNameAndUserId(name, userId);
-    }
-    public List<Todolist> findByUserId(Integer userId) {
-        return todolistRepository.findByUserId(userId);
+//    public boolean existsByName(String name) {
+//        return todolistRepository.existsByName(name);
+//    }
+//    public boolean existsByUserId(Integer usersId) {
+//        return todolistRepository.existsByUsersId(usersId);
+//    }
+//    public boolean existsByNameAndUserId(String name, Integer usersId) {
+//        return todolistRepository.existsByNameAndUsersId(name, usersId);
+//    }
+    public List<Todolists> findByUserId(Integer usersId) {
+        return todolistRepository.findByUsersId(usersId);
     }
 
 }

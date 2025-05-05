@@ -1,6 +1,6 @@
 package com.thang.todolist.service;
 
-import com.thang.todolist.entity.Task;
+import com.thang.todolist.entity.Tasks;
 import com.thang.todolist.exception.NotFoundException;
 import com.thang.todolist.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,26 +17,26 @@ public class TaskService {
         this.taskRepository = taskRepository;
     }
 
-    public List<Task> getAllTasksByTodolistId(Integer id) {
+    public List<Tasks> getAllTasksByTodolistId(Integer id) {
         return taskRepository.findByTodolistId(id);
     }
-    public Task getTaskByTitle(String title) {
+    public Tasks getTaskByTitle(String title) {
         return taskRepository.findByTitle(title);
     }
 
     //create also update here
-    public Task saveTask(Task task) {
-        return taskRepository.save(task);
+    public Tasks saveTask(Tasks tasks) {
+        return taskRepository.save(tasks);
     }
 
     public void deleteTask(Integer id) {
         taskRepository.deleteById(id);
     }
-    public boolean existsByTitle(String title) {
-        return taskRepository.existsByTitle(title);
-    }
+//    public boolean existsByTitle(String title) {
+//        return taskRepository.existsByTitle(title);
+//    }
 
-    public Task getTaskById(Integer id) {
+    public Tasks getTaskById(Integer id) {
         return taskRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Task with ID " + id + " not found"));
     }
