@@ -12,9 +12,11 @@ import java.util.List;
 import jakarta.validation.constraints.NotBlank;
 
 
+
 @Entity
+@Table(name= "todolists")
 @Data
-public class Todolists {
+public class Todolist {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonSerialize(using = ToStringSerializer.class)
@@ -23,7 +25,7 @@ public class Todolists {
     @ManyToOne
     @JoinColumn(name = "user_id")
     @JsonIgnore
-    private Users users;
+    private User user;
 
     @NotBlank(message = "Name cannot be empty")
     @JsonFormat(shape = JsonFormat.Shape.STRING)
@@ -37,15 +39,7 @@ public class Todolists {
 
     @OneToMany(mappedBy = "todolist", cascade = CascadeType.ALL)
     @JsonManagedReference
-    private List<Tasks> tasks;
-
-    public Users getUsers() {
-        return users;
-    }
-
-    public void setUsers(Users users) {
-        this.users = users;
-    }
+    private List<Task> tasks;
 
     @PrePersist
     public void prePersist() {

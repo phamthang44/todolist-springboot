@@ -18,3 +18,22 @@ export const taskOperation = {
         }
     }
 }
+
+export async function findTodolistById(id) {
+    const foundTodoList = await fetchTodolistById(id);
+    if (foundTodoList) {
+        return foundTodoList;
+    } else {
+        throw new Error('Todolist not found');
+    }
+}
+
+async function fetchTodolistById(id) {
+    const apiUrl = `/api/todo/${id}`;
+    const response = await fetch(apiUrl);
+    if (response.ok) {
+        return await response.json();
+    } else {
+        throw new Error('Failed to fetch todolist');
+    }
+}

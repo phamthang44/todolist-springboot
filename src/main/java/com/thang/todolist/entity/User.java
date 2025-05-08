@@ -13,15 +13,14 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 
 import static jakarta.persistence.GenerationType.AUTO;
 
 @Entity
+@Table(name = "users")
 @Data
-public class Users {
+public class User {
     @Id
     @GeneratedValue(strategy = AUTO)
     @JsonSerialize(using = ToStringSerializer.class)
@@ -46,9 +45,9 @@ public class Users {
 
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     @JsonBackReference
-    private List<Todolists> todoLists;
+    private List<Todolist> todoLists;
 
     @Enumerated(EnumType.STRING)
     @JsonIgnore
@@ -61,10 +60,4 @@ public class Users {
         DELETED
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-    public Integer getId() {
-        return id;
-    }
 }

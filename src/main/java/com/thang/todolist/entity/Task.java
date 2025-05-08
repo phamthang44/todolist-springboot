@@ -10,8 +10,9 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "tasks")
 @Data
-public class Tasks {
+public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JsonSerialize(using = ToStringSerializer.class)
@@ -20,7 +21,7 @@ public class Tasks {
     @ManyToOne
     @JoinColumn(name = "todolist_id")
     @JsonBackReference
-    private Todolists todolist;
+    private Todolist todolist;
 
     @NotBlank(message = "Title cannot be empty")
     @JsonSerialize(using = ToStringSerializer.class)

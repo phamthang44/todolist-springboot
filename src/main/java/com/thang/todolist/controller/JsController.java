@@ -32,4 +32,14 @@ public class JsController {
                 .header("Content-Type", "application/javascript")
                 .body(jsContent);
     }
+
+    @GetMapping(value = "/script.js", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> getScriptJs() throws IOException {
+        // Load app.js from src/main/resources/js/
+        ClassPathResource jsFile = new ClassPathResource("js/script.js");
+        String jsContent = new String(jsFile.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+        return ResponseEntity.ok()
+                .header("Content-Type", "application/javascript")
+                .body(jsContent);
+    }
 }
