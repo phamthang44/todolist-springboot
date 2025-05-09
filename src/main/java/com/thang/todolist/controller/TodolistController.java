@@ -39,23 +39,45 @@ public class TodolistController {
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
     public TodoDTO createTodoList(@Valid @RequestBody Todolist todolist) {
+        TodoDTO todoResponse = new TodoDTO();
         if (todolist.getUser() == null) {
             User defaultUser = new User();
             defaultUser.setId(1);
             todolist.setUser(defaultUser);
         }
-        Todolist todo = this.todoListService.saveTodoList(todolist); // Trả về đối tượng để serialize thành JSON
-        TodoDTO todoResponse = new TodoDTO();
-        todoResponse.setId(todo.getId());
-        todoResponse.setName(todo.getName());
-        todoResponse.setCreatedAt(todo.getCreatedAt());
-        todoResponse.setUpdatedAt(todo.getUpdatedAt());
-        todoResponse.setStatus("success");
+        todoResponse.setId(todolist.getId());
+        todoResponse.setName(todolist.getName());
+        todoResponse.setCreatedAt(todolist.getCreatedAt());
+        todoResponse.setUpdatedAt(todolist.getUpdatedAt());
+        todoResponse.setStatus("success"); //need to check before setStatus
+        saveTodoList(todolist);
         todoResponse.setMessage("Todo list created successfully");
 
         return todoResponse;
     }
 
+    @PutMapping("/update")
+    public TodoDTO updateTodoList(@Valid @RequestBody Todolist todolist) {
+        saveTodoList(todolist);
+        TodoDTO todoResponse = new TodoDTO();
+        todoResponse.setId(todolist.getId());
+        todoResponse.setName(todolist.getName());
+        todoResponse.setCreatedAt(todolist.getCreatedAt());
+        todoResponse.setUpdatedAt(todolist.getUpdatedAt());
+        todoResponse.setStatus("success"); //need to check before setStatus
+        todoResponse.setMessage("Todo list updated successfully");
+
+        return todoResponse;
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteTodoList(@PathVariable Integer id) {
+        this.todoListService.deleteTodoList(id);
+    }
+
+    private void saveTodoList(@RequestBody @Valid Todolist todolist) {
+        Todolist todo = this.todoListService.saveTodoList(todolist); // Trả về đối tượng để serialize thành JSON
+    }
 
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

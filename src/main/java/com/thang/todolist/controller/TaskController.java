@@ -2,6 +2,7 @@ package com.thang.todolist.controller;
 
 import com.thang.todolist.dto.TaskDTO;
 import com.thang.todolist.entity.Task;
+import com.thang.todolist.entity.Todolist;
 import com.thang.todolist.service.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -13,9 +14,10 @@ import java.util.List;
 @RequestMapping("/api/task")
 public class TaskController {
     private final TaskService taskService;
-
-    public TaskController(TaskService taskService) {
+    private final TodolistController todolistController;
+    public TaskController(TaskService taskService, TodolistController todolistController) {
         this.taskService = taskService;
+        this.todolistController = todolistController;
     }
 
     @GetMapping("/tasks/todolist/{id}")
@@ -25,30 +27,38 @@ public class TaskController {
 
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
-    public TaskDTO createTask(@Valid @RequestBody Task task) {
-
-        Task taskEntity = this.taskService.saveTask(task);
-
-        TaskDTO taskDTO = new TaskDTO();
-        taskDTO.setId(taskEntity.getId());
-        taskDTO.setTitle(taskEntity.getTitle());
-        taskDTO.setDescription(taskEntity.getDescription());
-        taskDTO.setStatus(taskEntity.getStatus().toString());
-        taskDTO.setPriority(taskEntity.getPriority().toString());
-        taskDTO.setDueDate(taskEntity.getDueDate().toString());
-        taskDTO.setCreatedAt(taskEntity.getCreatedAt().toString());
-        taskDTO.setUpdatedAt(taskEntity.getUpdatedAt().toString());
-
-        if (task.getTodolist() != null) {
-            taskDTO.setTodolistId(task.getTodolist().getId());
-        } else {
-            taskDTO.setTodolistId(null);
-        }
-
-        return taskDTO;
+    public Task createTask(@Valid @RequestBody Task task) {
+        return taskService.saveTask(task);
     }
 
-    @PutMapping
+    private Task convertToEntity(TaskDTO taskDTO) {
+        Task task = new Task();
+        task.setTitle(taskDTO.getTitle());
+        task.setDescription(taskDTO.getDescription());
+        task.setStatus(Task.Status.valueOf(taskDTO.getStatus()));
+        task.setPriority(Task.Priority.valueOf(taskDTO.getPriority()));
+        task.setDueDate(taskDTO.getDueDate());
+        task.setCreatedAt(taskDTO.getCreatedAt());
+        task.setUpdatedAt(taskDTO.getUpdatedAt());
+        Todolist todolist = todolistController.getTodoListById(taskDTO.getTodolistId());
+        task.setTodolist(todolist);
+        return task;
+    }
+
+    private TaskDTO convertToDTO(Task task) {
+        TaskDTO dto = new TaskDTO();
+        dto.setTitle(task.getTitle());
+        dto.setDescription(task.getDescription());
+        dto.setStatus(task.getStatus().toString());
+        dto.setPriority(task.getPriority().toString());
+        dto.setDueDate(task.getDueDate());
+        dto.setCreatedAt(task.getCreatedAt());
+        dto.setUpdatedAt(task.getUpdatedAt());
+        dto.setTodolistId(task.getTodolist() != null ? task.getTodolist().getId() : null);
+        return dto;
+    }
+
+    @PutMapping("/update")
     public Task updateTask(@RequestBody Task task) {
         return taskService.saveTask(task);
     }

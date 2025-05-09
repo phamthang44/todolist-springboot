@@ -233,7 +233,7 @@ fetch('your-api-endpoint')
 const handleTaskOperation = {
     createTask: async function() {
         const formCreateTask = document.getElementById('create-task-form');
-        const todolist = localStorage.getItem('todolist');
+        const todolist = JSON.parse(localStorage.getItem('todolist'));
         if (formCreateTask) {
             formCreateTask.addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -245,7 +245,16 @@ const handleTaskOperation = {
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(data)
+                    body: JSON.stringify({
+                        title: data.title,
+                        status: data.status,
+                        priority: data.priority,
+                        todolistId: todolist.id,
+                        dueDate: data.dueDate + 'T00:00:00',
+                        createdAt: new Date().toISOString(), // ISO format
+                        updatedAt: new Date().toISOString(),
+                        description: data.description
+                    })
                 });
                 if (response.ok) {
                     window.location = "/todolist.html";
@@ -256,4 +265,9 @@ const handleTaskOperation = {
         }
     }
 }
-handleTaskOperation.createTask().then(r => console.log(r));
+
+handleTaskOperation.createTask().then(data => {
+    console.log(data);
+});
+
+
