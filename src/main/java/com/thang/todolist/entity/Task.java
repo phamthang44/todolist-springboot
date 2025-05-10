@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Data
 public class Task {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonSerialize(using = ToStringSerializer.class)
     private Integer id;
 

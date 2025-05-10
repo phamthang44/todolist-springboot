@@ -9,6 +9,9 @@ function renderTodolistPage(todolist, tasks) {
                         <th class="py-2 px-4 text-left">Task</th>
                         <th class="py-2 px-4 text-left">Status</th>
                         <th class="py-2 px-4 text-left">Priority</th>
+                        <th class="py-2 px-4 text-left">Due date</th>
+                        <th class="py-2 px-4 text-left">Create date</th>
+                        <th class="py-2 px-4 text-left">Update date</th>
                         <th class="py-2 px-4 text-left">Actions</th>
                     </tr>
                 </thead>
@@ -23,6 +26,9 @@ function renderTodolistPage(todolist, tasks) {
             <td class="py-2 px-4">${task.title}</td>
             <td class="py-2 px-4">${task.status}</td>
             <td class="py-2 px-4">${task.priority}</td>
+            <td class="py-2 px-4">${task.dueDate}</td>
+            <td class="py-2 px-4">${task.createdAt}</td>
+            <td class="py-2 px-4">${task.updatedAt}</td>
             <td class="py-2 px-4">
                 <button class="text-blue-500 hover:text-blue-700" onclick="editTask(${todolist.id}, ${task.id})">Edit</button>
                 <button class="text-red-500 hover:text-red-700" onclick="deleteTask(${todolist.id}, ${task.id})">Delete</button>

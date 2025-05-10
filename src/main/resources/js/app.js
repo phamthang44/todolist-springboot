@@ -1,6 +1,6 @@
-import {taskOperation} from "/api/js/utils.js";
 // import {renderTodolistPage} from "/api/js/script.js";
-import {findTodolistById} from "/api/js/utils.js";
+import {findTodolistById, taskOperation} from "/api/js/utils.js";
+
 async function loadTodolist() {
     const response = await fetch('/api/todo/todolists');
     return await response.json();
@@ -25,7 +25,7 @@ function renderTodoLists(todoLists) {
         container.innerHTML = ''; // Xóa nội dung cũ
         todoLists.forEach(todoList => {
             const tasksHtml = todoList.tasks.map(task => `
-          <tr class="task border-1 border-gray-600" data-task-id="${task.id}"">
+          <tr class="task border-1 border-gray-600" data-task-id="${task.id}" data-todo-list-id="${todoList.id}">
             <td class="py-2 px-4">${task.title}</td>
             <td class="py-2 px-4">
               <span class="inline-block px-2 py-1 text-xs font-semibold rounded-full
@@ -55,7 +55,7 @@ function renderTodoLists(todoLists) {
 
             const todoListHtml = `
           <div class="mb-6 todolist" data-todo-list-id="${todoList.id}">
-            <h2 class="text-xl font-semibold mb-2">${todoList.name} time: ${todoList.createdAt}</h2>
+            <h2 class="text-xl font-semibold mb-2 w-full flex"><span class="inline-block">${todoList.name}</span><span class="inline-block justify-end ml-auto">time: ${todoList.createdAt}</span></h2>
             <table class="w-full bg-white shadow-md rounded-lg overflow-hidden">
               <thead class="bg-gray-200">
                 <tr>
@@ -231,8 +231,7 @@ fetch('your-api-endpoint')
 //
 // })
 const handleTaskOperation = {
-    createTask: async function() {
-        const formCreateTask = document.getElementById('create-task-form');
+    createTask: async function(formCreateTask) {
         const todolist = JSON.parse(localStorage.getItem('todolist'));
         if (formCreateTask) {
             formCreateTask.addEventListener('submit', async (e) => {
@@ -251,13 +250,13 @@ const handleTaskOperation = {
                         priority: data.priority,
                         todolistId: todolist.id,
                         dueDate: data.dueDate + 'T00:00:00',
-                        createdAt: new Date().toISOString(), // ISO format
-                        updatedAt: new Date().toISOString(),
+                        createdAt: takeCurrentTime(), // ISO format
+                        updatedAt: takeCurrentTime(),
                         description: data.description
                     })
                 });
                 if (response.ok) {
-                    window.location = "/todolist.html";
+                    window.location = "/";
                 } else {
                     console.error('Error creating task:', response.statusText);
                 }
@@ -266,8 +265,152 @@ const handleTaskOperation = {
     }
 }
 
-handleTaskOperation.createTask().then(data => {
-    console.log(data);
-});
+const formCreateTask = document.getElementById('create-task-form');
+
+handleTaskOperation.createTask(formCreateTask).then(r => console.log(r));
+
+function takeCurrentTime() {
+    const currentDate = new Date();
+    let formattedDate = currentDate.toISOString().split("T");
+    formattedDate[1] = formattedDate[1].split(".")[0];
+    return formattedDate.join("T");
+}
+
+// edit page
+const editOptions = document.getElementById("options-todolist");
+if (editOptions) {
+    const todoLists = getTodoLists();
+    todoLists.then(todoLists => {
+        renderEditOptions(todoLists);
+    });
+    function renderEditOptions(todoLists) {
+        todoLists.forEach(todoList => {
+            const option = document.createElement("option");
+            option.value = todoList.id;
+            option.textContent = todoList.name;
+            editOptions.appendChild(option);
+        })
+    }
+
+    editOptions.addEventListener("change", async (e) => {
+        const todoListId = e.target.value;
+        const todolist = await findTodolistById(todoListId);
+        if(todolist) {
+            renderFormEditTodoList(todolist);
+        }
+    });
+
+}
+    function renderFormEditTodoList(todolist) {
+        const formEditTodoList = document.createElement("form")
+        formEditTodoList.id = "edit-todolist-form";
+        formEditTodoList.method = "PUT";
+        formEditTodoList.action = "/api/todo/update";
+        formEditTodoList.className = "flex flex-col space-y-4";
+        const inputId = document.createElement("input");
+        inputId.type = "hidden";
+        inputId.name = "id";
+        inputId.value = todolist.id;
+        formEditTodoList.appendChild(inputId);
+        const inputName = document.createElement("input");
+        inputName.type = "text";
+        inputName.name = "name";
+        inputName.placeholder = "Todolist name";
+        inputName.className = "border border-gray-300 rounded p-2";
+        inputName.value = todolist.name;
+        const saveButton = document.createElement("button");
+        saveButton.type = "submit";
+        saveButton.className = "bg-blue-500 text-white rounded p-2";
+        saveButton.textContent = "Save";
+        formEditTodoList.appendChild(inputName);
+        formEditTodoList.appendChild(saveButton);
+        const container = document.querySelector(".container-edit-todo");
+        if (container) {
+            container.innerHTML = ''; // Xóa nội dung cũ
+            container.appendChild(formEditTodoList);
+        }
+
+        if (formEditTodoList) {
+            formEditTodoList.addEventListener("submit", async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const data = Object.fromEntries(formData.entries());
+                console.log(data);
+                const response = await fetch(formEditTodoList.action, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        id: todolist.id,
+                        name: data.name,
+                    })
+                });
+                if (response.ok) {
+                    // console.log("Update successfully todolist");
+                    // response.json().then(
+                    //     data => {
+                    //         console.log(data);
+                    //         const updatedTodoList = {
+                    //             id: data.id,
+                    //             name: data.name,
+                    //             updatedAt: data.updatedAt,
+                    //             tasks: []
+                    //         };
+                    //         // localStorage.setItem('updated-todolist', JSON.stringify(updatedTodoList));
+                    //     }
+                    // )
+                    // console.log(response.json());
+                    window.location = "/";
+                } else {
+                    console.error('Error creating task:', response.statusText);
+                }
+            });
+    }
+}
 
 
+async function getTodoLists() {
+    const response = await fetch('/api/todo/todolists');
+    return await response.json();
+}
+
+const deleteTodoListPage = document.getElementById("delete-todo-page");
+if (deleteTodoListPage) {
+    const deleteOptions = document.getElementById("options-todolist");
+    const todoLists = getTodoLists();
+    todoLists.then(todoLists => {
+        renderDeleteOptions(todoLists);
+    });
+    function renderDeleteOptions(todoLists) {
+        todoLists.forEach(todoList => {
+            const option = document.createElement("option");
+            option.value = todoList.id;
+            option.textContent = todoList.name;
+            deleteOptions.appendChild(option);
+        })
+    }
+    const deleteForm = document.getElementById("delete-todo-form");
+    if (deleteForm) {
+        deleteForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            console.log(data);
+            const response = await fetch(`/api/todo/delete/${data.id}`, {
+                method: 'DELETE',
+            });
+            if (response.ok) {
+                const message = await response.text(); // Lấy thông báo từ server
+                console.log('Success:', message);
+                // Chuyển hướng hoặc cập nhật UI
+                window.location = "/";
+            } else {
+                const errorMessage = await response.text();
+                console.error('Error deleting task:', response.status, errorMessage);
+                alert(`Error: ${errorMessage}`); // Hiển thị lỗi cho người dùng
+                console.error('Error creating task:', response.statusText);
+            }
+        });
+    }
+}

@@ -52,4 +52,8 @@ public class TodolistService {
         return todolistRepository.findByUserId(userId);
     }
 
+    public Todolist findById(Integer id) {
+        return todolistRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Todo list with ID " + id + " not found"));
+    }
 }

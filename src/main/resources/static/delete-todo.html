@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="/css/output.css">
+    <title>Delete Todolist</title>
+</head>
+<body id="delete-todo-page">
+<div class="flex justify-center items-center min-h-screen bg-gray-100">
+    <form method="DELETE" class="flex flex-col items-center" id="delete-todo-form">
+        <select name="id" id="options-todolist" class="w-[200px] h-[40px] rounded-lg bg-red-500 text-white font-semibold hover:bg-red-600 gap-4">
+            <!-- Các todolist sẽ được render động bằng JavaScript -->
+        </select>
+        <button type="submit" class="w-[200px] h-[40px] rounded-lg bg-red-500 text-white font-semibold hover:bg-red-600 gap-4">Delete</button>
+    </form>
+</div>
+<script type="module" src="/api/js/app.js"></script>
+</body>
+</html>
