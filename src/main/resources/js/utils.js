@@ -7,14 +7,39 @@ export function addTask(container, taskText) {
 
 
 export const taskOperation = {
-    editTask: function (todoListId, taskId) {
-        alert(`Edit task ${taskId} in todo list ${todoListId}`);
+    editTask: async function (taskId, todoListId) {
+        // alert(`Edit task ${taskId} in todo list ${todoListId}`);
         // Thêm logic gọi API để edit task
+        // const data = await getTaskByTodoListIdAndTaskId(todoListId, taskId);
+        const response = await fetch(`/api/task/edit`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                taskId: +taskId,
+                todoListId: +todoListId
+            })
+        })
+        return response.json();
+
     },
-    deleteTask: function (todoListId, taskId) {
+    deleteTask: function (taskId) {
         if (confirm(`Are you sure you want to delete task ${taskId}?`)) {
-            alert(`Deleted task ${taskId} in todo list ${todoListId}`);
-            // Thêm logic gọi API để xóa task
+            fetch(`/api/task/${taskId}`, {
+                method: 'DELETE'
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert(`Task ${taskId} deleted successfully`);
+                        window.location.href = '/'
+                    } else {
+                        alert(`Failed to delete task ${taskId}`);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error deleting task:', error);
+                });
         }
     }
 }

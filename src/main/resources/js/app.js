@@ -48,7 +48,7 @@ function renderTodoLists(todoLists) {
               <button class="delete-task-btn text-red-600 hover:underline">Delete</button>
             </td>
             <td class="py-2 px-4">
-                <button class="text-green-600 hover:underline view-task">View</button>
+                <button class="text-green-600 hover:underline view-task" data-task-id="${task.id}">View</button>
             </td>
           </tr>
         `).join('');
@@ -76,6 +76,19 @@ function renderTodoLists(todoLists) {
             container.innerHTML += todoListHtml;
         });
     }
+    const viewTaskButtons = document.querySelectorAll('.view-task');
+    if(viewTaskButtons) {
+        viewTaskButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                if(e.target.classList.contains('view-task') && e.target.hasAttribute('data-task-id')) {
+                    const taskId = e.target.dataset.taskId
+                    console.log(taskId);
+                    window.location.href = `task.html?id=${taskId}`;
+                }
+            });
+        });
+    }
+
     const todoListsDOM = document.querySelectorAll('.todolist');
     todoListsDOM.forEach(todoList => {
 
@@ -87,6 +100,7 @@ function renderTodoLists(todoLists) {
 
                 localStorage.setItem('todolist', JSON.stringify(todolist));
                 window.location.href = "todolist.html";
+
             }
         })
 
@@ -98,11 +112,17 @@ function renderTodoLists(todoLists) {
             const deleteButton = task.querySelector('.delete-task-btn');
 
             editButton.addEventListener('click', () => {
-                taskOperation.editTask(todoListId, taskId);
+                const data = taskOperation.editTask(taskId, todoListId);
+                data.then(data => {
+                    localStorage.setItem('task', JSON.stringify(data));
+                    window.location.href = '/edit-task.html'
+                })
+
             });
 
+
             deleteButton.addEventListener('click', () => {
-                taskOperation.deleteTask(todoListId, taskId);
+                taskOperation.deleteTask(taskId);
             });
         });
     })
@@ -409,6 +429,81 @@ if (deleteTodoListPage) {
                 const errorMessage = await response.text();
                 console.error('Error deleting task:', response.status, errorMessage);
                 alert(`Error: ${errorMessage}`); // Hiển thị lỗi cho người dùng
+                console.error('Error creating task:', response.statusText);
+            }
+        });
+    }
+}
+
+//Edit Task page
+const editTaskPage = document.getElementById("edit-task-page");
+if (editTaskPage) {
+    // async function getTaskInfo(taskId) {
+    //     const response = await fetch(`/api/task/${taskId}`);
+    //     return await response.json();
+    // }
+    // const url = window.location.pathname; // Lấy phần pathname, ví dụ: /api/task/12345
+    // const id = url.split('/').pop();
+    // if (id) {
+    //     const data = getTaskInfo(id);
+    //     data.then(data => {
+    //         console.log(data)
+    //     })
+    // }
+
+    const data = JSON.parse(localStorage.getItem('task'));
+    if(data) {
+        const title = document.querySelector('.title-field');
+        const status = document.querySelector('.status-field');
+        const priority = document.querySelector('.priority-field');
+        let dueDate = document.querySelector('.due-date-field');
+        const description = document.querySelector('.description-field');
+        const createdAt = document.querySelector('.created-at-time');
+        const updatedAt = document.querySelector('.updated-at-time');
+        const taskId = document.querySelector('.task-id');
+        taskId.value = data.id;
+        title.value = data.title;
+        status.value = data.status;
+        priority.value = data.priority;
+        description.value = data.description;
+        if(data.dueDate) {
+            dueDate.innerHTML = `<span>Due date : ${data.dueDate.split("T")[0]}</span>`;
+        } else {
+            dueDate.innerHTML = "No due Date";
+        }
+
+        createdAt.innerHTML = `<span>Created at : ${data.createdAt.split("T")[0]}</span>`
+        updatedAt.innerHTML = `<span>Updated at : ${data.updatedAt.split("T")[0]}</span>`;
+        localStorage.removeItem('task')
+    }
+
+
+
+    const editTaskForm = document.getElementById("edit-task-form");
+    if (editTaskForm) {
+        editTaskForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+            console.log(data);
+            const response = await fetch(`/api/task/update`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    taskId: data.id,
+                    title: data.title,
+                    status: data.status,
+                    priority: data.priority,
+                    dueDate: data.dueDate ? data.dueDate + 'T00:00:00' : data.dueDate,
+                    updatedAt: takeCurrentTime(),
+                    description: data.description,
+                })
+            });
+            if (response.ok) {
+                window.location = "/";
+            } else {
                 console.error('Error creating task:', response.statusText);
             }
         });

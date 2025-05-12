@@ -40,4 +40,9 @@ public class TaskService {
         return taskRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Task with ID " + id + " not found"));
     }
+
+    public Task getTaskByTodoListIdAndTaskId(Integer taskId, Integer todoListId) {
+        return (Task) taskRepository.findByTodolistIdAndId(todoListId, taskId)
+                .orElseThrow(() -> new NotFoundException("Task with ID " + taskId + " not found in TodoList with ID " + todoListId));
+    }
 }

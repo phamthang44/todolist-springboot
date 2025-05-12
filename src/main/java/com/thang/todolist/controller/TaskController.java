@@ -1,6 +1,7 @@
 package com.thang.todolist.controller;
 
 import com.thang.todolist.dto.TaskDTO;
+import com.thang.todolist.dto.request.TaskRequestDTO;
 import com.thang.todolist.entity.Task;
 import com.thang.todolist.entity.Todolist;
 import com.thang.todolist.service.TaskService;
@@ -8,6 +9,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -60,8 +62,34 @@ public class TaskController {
     }
 
     @PutMapping("/update")
-    public Task updateTask(@RequestBody Task task) {
+    public Task updateTask(@Valid @RequestBody TaskRequestDTO taskRequest) {
+        Integer taskId = taskRequest.getTaskId();
+        Task task = taskService.getTaskById(taskId);
+        if (task == null) {
+            throw new IllegalArgumentException("Task not found");
+        }
+        task.setTitle(taskRequest.getTitle());
+        task.setDescription(taskRequest.getDescription());
+        task.setStatus(Task.Status.valueOf(taskRequest.getStatus()));
+        task.setPriority(Task.Priority.valueOf(taskRequest.getPriority()));
+        task.setDueDate(LocalDateTime.parse(taskRequest.getDueDate()));
+        task.setUpdatedAt(LocalDateTime.parse(taskRequest.getUpdatedAt()));
+
         return taskService.saveTask(task);
+    }
+
+    @PostMapping("/edit")
+    public Task getTaskByTodoListIdAndTaskId(@Valid @RequestBody TaskRequestDTO taskRequest) {
+        Integer taskId = taskRequest.getTaskId();
+        Integer todoListId = taskRequest.getTodoListId();
+
+        // Không cần kiểm tra null vì @Valid và @NotNull đã xử lý
+        Task task = taskService.getTaskByTodoListIdAndTaskId(taskId, todoListId);
+        if (task == null) {
+            throw new IllegalArgumentException("Task not found");
+        }
+
+        return task;
     }
 
     @DeleteMapping("/{id}")
